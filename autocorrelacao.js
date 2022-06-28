@@ -35,7 +35,8 @@ var plotly = require('plotly')("mpmoreno", "fNau5X68Gy4IcfXJeMfS")
 
 var dados = ""
 var eixoX = [], funcao = [], ACF = [];
-var fMed = 0, N = 1000;
+var fMed = 0, N = 1000, norm = 0;
+
 
 for (t=0; t<=N; t++)
 {
@@ -50,13 +51,23 @@ fMed = fMed/(N+1)
 for(tau=0; tau<=N; tau++)
     ACF[tau] = 0
 
-//ver aqui
+
+
+//Normalização
+for (t=0; t<=N; t++)
+{
+    norm = norm + funcao[t] * funcao[t]
+}
+
+
 for (tau=0; tau<=N; tau++)
 {
     for (t=tau; t<=N; t++)
     {
         ACF[tau] = ACF[tau] + funcao[t] * funcao[t-tau]
     }
+
+    ACF[tau] = ACF[tau]/norm
 }
 
 var linha
