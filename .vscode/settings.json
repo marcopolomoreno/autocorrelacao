@@ -1,10 +1,14 @@
 {
     "cSpell.words": [
+        "autocorrelacao",
         "conversao",
+        "correlacao",
+        "deasync",
         "fileopt",
         "funcao",
         "mpmoreno",
         "plotly",
-        "Rgsh"
+        "Rgsh",
+        "tickfont"
     ]
 }

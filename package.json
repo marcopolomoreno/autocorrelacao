@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "deasync": "^0.1.26",
     "get-pixels": "^3.3.3",
     "image-to-rgba-matrix": "^1.0.0",
     "jimp": "^0.16.1",

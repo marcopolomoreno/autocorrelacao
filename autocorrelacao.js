@@ -7,6 +7,9 @@ fs = require('fs');
 //gerar gráfico online
 var plotly = require('plotly')("mpmoreno", "NiT1RgshVXndQKNXz6Bj")
 
+//Chamada de funções síncronas
+var deasync = require('deasync');
+
 /* -------------------------------------------------------------*/
 
 
@@ -14,9 +17,11 @@ var plotly = require('plotly')("mpmoreno", "NiT1RgshVXndQKNXz6Bj")
 //leitura e escrita de arquivos
 /* -------------------------------------------------------------*/
 
-const nome_arquivo = '/dados.txt'
+const arquivoMatriz = '/matriz.txt'
+const arquivoCorrelacao = '/correlacao.txt'
 
-const path = __dirname + `${nome_arquivo}`
+const pathMatriz = __dirname + `${arquivoMatriz}`
+const pathCorrelacao = __dirname + `${arquivoCorrelacao}`
 
 function lerArquivo(caminho){
     fs.readFile(caminho, 'utf-8', function(error,data){
@@ -34,7 +39,7 @@ function escreverArquivo(caminho,texto){
         if (error){
             console.error('erro de escrita' + error.message)
         } else {
-            console.log('escreve com sucesso em '+ caminho)
+            console.log('Escrita com sucesso em '+ caminho)
         }
     })
 }
@@ -50,8 +55,8 @@ function escreverArquivo(caminho,texto){
 //exportação dos pixels da imagem para dados.txt
 /* -------------------------------------------------------------*/
 
-const src = `imagem.jpg`;
-var dadosImg = ""
+const src = "imagem2.jpg";
+var dadosImg = "", pix = []
 
 getPixels(src, function(err, pixels) {
   if(err) {
@@ -68,11 +73,17 @@ getPixels(src, function(err, pixels) {
       //const a = pixels.get(x, y, 3);
       //const rgba = `color: rgba(${r}, ${g}, ${b}, ${a});`;
       dadosImg = dadosImg + r + " "
+
+      if (y === Math.floor(0.75*pixels.shape[1]))
+      {
+        pix[x] = r
+      }
+        
     }
     dadosImg = dadosImg + "\n"
   }
 
-  escreverArquivo(path, dadosImg)
+  escreverArquivo(pathMatriz, dadosImg)
 });
 
 /* -------------------------------------------------------------*/
@@ -81,34 +92,55 @@ getPixels(src, function(err, pixels) {
 
 var dados = ""
 var eixoX = [], funcao = [], ACF = [];
-var fMed = 0, N = 1000, norm = 0;
+var fMed = 0, N = 1280, norm = 0;
 
 
-for (t=0; t<=N; t++)
-{
-    eixoX[t] = t
-    funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*Math.cos(0.5*t)
-    //funcao[t] = Math.random()-0.5 + 0.02*Math.cos(0.02*t)
-    fMed = fMed + funcao[t]
+
+
+//Função síncrona
+function sinalEntrada(){
+    setTimeout(function(){
+        
+    },3000);
+    while(pix[6] === undefined) {
+      require('deasync').sleep(100);
+    }
+
+    for (t=0; t<=N-1; t++)
+    {
+        eixoX[t] = t
+        funcao[t] = pix[t]
+        //funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*Math.cos(0.5*t)
+        //funcao[t] = Math.random()-0.5 + 0.02*Math.cos(0.02*t)
+        fMed = fMed + funcao[t]
+    }
 }
 
-fMed = fMed/(N+1)
+sinalEntrada()
 
-for(tau=0; tau<=N; tau++)
+
+
+
+
+
+
+fMed = fMed/N
+
+for(tau=0; tau<=N-1; tau++)
     ACF[tau] = 0
 
 
 
 //Normalização
-for (t=0; t<=N; t++)
+for (t=0; t<=N-1; t++)
 {
     norm = norm + funcao[t] * funcao[t]
 }
 
 
-for (tau=0; tau<=N; tau++)
+for (tau=0; tau<=N-1; tau++)
 {
-    for (t=tau; t<=N; t++)
+    for (t=tau; t<=N-1; t++)
     {
         ACF[tau] = ACF[tau] + funcao[t] * funcao[t-tau]
     }
@@ -118,20 +150,17 @@ for (tau=0; tau<=N; tau++)
 
 var linha
 
-for (tau=0; tau<=N; tau++)
+for (tau=0; tau<=N-1; tau++)
 {
     linha = eixoX[tau] + " " + funcao[tau] + " " + ACF[tau]
     console.log(linha)
     dados = dados + linha + "\n"
 }
 
+escreverArquivo(pathCorrelacao, dados)
 
 
 
-
-
-
-//escreverArquivo(path, dados)
 
 
 var trace1 = {
@@ -150,7 +179,18 @@ var trace2 = {
 
 
 var data = [trace1, trace2];
-var layout = {fileopt : "overwrite", filename : "simple-node-example"};
+var layout = {
+    fileopt : "overwrite",
+    filename : "Sinal e sua autocorrelação",
+    yaxis: {title: 'Sinal'},
+    yaxis2: {
+        title: 'Autocorrelação',
+        titlefont: {color: 'rgb(148, 103, 189)'},
+        tickfont: {color: 'rgb(148, 103, 189)'},
+        overlaying: 'y',
+        side: 'right'
+    }
+};
 
 plotly.plot(data, layout, function (err, msg) {
 	//if (err) return console.log(err);
