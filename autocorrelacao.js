@@ -1,4 +1,18 @@
+//pega pixels da imagem
+var getPixels = require("get-pixels")
+
+//ler e escrever arquivos
 fs = require('fs');
+
+//gerar gráfico online
+var plotly = require('plotly')("mpmoreno", "NiT1RgshVXndQKNXz6Bj")
+
+/* -------------------------------------------------------------*/
+
+
+
+//leitura e escrita de arquivos
+/* -------------------------------------------------------------*/
 
 const nome_arquivo = '/dados.txt'
 
@@ -27,9 +41,41 @@ function escreverArquivo(caminho,texto){
 
 //lerArquivo(path)
 
+/* -------------------------------------------------------------*/
 
 
-var plotly = require('plotly')("mpmoreno", "fNau5X68Gy4IcfXJeMfS")
+
+
+
+//exportação dos pixels da imagem para dados.txt
+/* -------------------------------------------------------------*/
+
+const src = `imagem.jpg`;
+var dadosImg = ""
+
+getPixels(src, function(err, pixels) {
+  if(err) {
+    console.log("Caminho errado");
+    return;
+  }
+
+  for (let y = 0; y < pixels.shape[1]; y++) {
+    for (let x = 0; x < pixels.shape[0]; x++) {
+
+      const r = pixels.get(x, y, 0);
+      //const g = pixels.get(x, y, 1);
+      //const b = pixels.get(x, y, 2);
+      //const a = pixels.get(x, y, 3);
+      //const rgba = `color: rgba(${r}, ${g}, ${b}, ${a});`;
+      dadosImg = dadosImg + r + " "
+    }
+    dadosImg = dadosImg + "\n"
+  }
+
+  escreverArquivo(path, dadosImg)
+});
+
+/* -------------------------------------------------------------*/
 
 
 
@@ -81,7 +127,11 @@ for (tau=0; tau<=N; tau++)
 
 
 
-escreverArquivo(path, dados)
+
+
+
+
+//escreverArquivo(path, dados)
 
 
 var trace1 = {
