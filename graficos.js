@@ -113,7 +113,16 @@ var layout = {
         tickfont: {color: '#0039e6', size: tamanhoFonte},
         overlaying: 'y',
         side: 'right'
-    }
+    },
+    legend: {
+        x: 0.8,
+        y: 1,
+        traceorder: 'normal',
+        font: {
+          size: tamanhoFonte,
+        },
+        borderwidth: 1.5
+      }
 };
 
 //var grafico = document.getElementById('grafico');

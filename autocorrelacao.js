@@ -97,7 +97,7 @@ var fMed = 0, N = 1280, norm = 0;
 
 //Sinal padrão
 var padrao = true
-var tipoSinal = "aleatorio"
+var tipoSinal = "gaussianaRuidoAleatorio"
 //gaussiana  gaussianaRuidoSenoidal  gaussianaRuidoAleatorio
 //aleatorio  aleatorioRuidoSenoidal
 
