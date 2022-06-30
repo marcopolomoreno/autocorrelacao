@@ -55,7 +55,7 @@ function escreverArquivo(caminho,texto){
 //exportação dos pixels da imagem para dados.txt
 /* -------------------------------------------------------------*/
 
-const src = "imagem2.jpg";
+const src = "imagem4.jpg";
 var dadosImg = "", pix = []
 
 getPixels(src, function(err, pixels) {
@@ -74,7 +74,7 @@ getPixels(src, function(err, pixels) {
       //const rgba = `color: rgba(${r}, ${g}, ${b}, ${a});`;
       dadosImg = dadosImg + r + " "
 
-      if (y === Math.floor(0.75*pixels.shape[1]))
+      if (y === Math.floor(0.5*pixels.shape[1]))
       {
         pix[x] = r
       }
@@ -95,6 +95,11 @@ var eixoX = [], funcao = [], ACF = [];
 var fMed = 0, N = 1280, norm = 0;
 
 
+//Sinal padrão
+var padrao = true
+var tipoSinal = "aleatorio"
+//gaussiana  gaussianaRuidoSenoidal  gaussianaRuidoAleatorio
+//aleatorio  aleatorioRuidoSenoidal
 
 
 //Função síncrona
@@ -109,9 +114,28 @@ function sinalEntrada(){
     for (t=0; t<=N-1; t++)
     {
         eixoX[t] = t
-        funcao[t] = pix[t]
-        //funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*Math.cos(0.5*t)
-        //funcao[t] = Math.random()-0.5 + 0.02*Math.cos(0.02*t)
+
+        if (padrao === true)
+        {
+            if (tipoSinal === "gaussiana")
+                funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
+
+            if (tipoSinal === "gaussianaRuidoSenoidal")
+                funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*Math.cos(0.5*t)
+
+            if (tipoSinal === "gaussianaRuidoAleatorio")
+                funcao[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*( Math.random()-0.5 )
+
+            if (tipoSinal === "aleatorio")
+                funcao[t] = Math.random()-0.5
+
+            if (tipoSinal === "aleatorioRuidoSenoidal")
+                funcao[t] = Math.random()-0.5 + 0.02*Math.cos(0.02*t)
+        }
+
+        if (padrao === false)
+            funcao[t] = pix[t]
+
         fMed = fMed + funcao[t]
     }
 }

@@ -69,34 +69,48 @@ for (var k=0; k<=pontos-1; k++)
     autocorrelacao[k] = Number(autocorrelacao[k])
 }
 
-console.log(arquivo)
-console.log(posicao)
+//console.log(arquivo)
+//console.log(posicao)
 
 
 
 var trace1 = {
     x: posicao,
-    y: sinal,
-    name: "Função",
-    type: "line"
+    y: autocorrelacao,
+    name: "Sinal",
+    type: "line",
+    line: {
+        color: '#ff6600',
+        width: 2
+      }
 };
 
 var trace2 = {
     x: posicao,
-    y: autocorrelacao,
+    y: sinal,
     name: "Autocorrelação",
     type: "line",
     yaxis: 'y2',
+    line: {
+        color: '#0039e6',
+        width: 2
+      }
 };
+
+var tamanhoFonte = 16
 
 
 var data = [trace1, trace2];
 var layout = {
-    yaxis1: {title: 'Sinal'},
-    yaxis2: {
+    yaxis1: {
         title: 'Autocorrelação',
-        titlefont: {color: 'rgb(148, 103, 189)'},
-        tickfont: {color: 'rgb(148, 103, 189)'},
+        titlefont: {color: '#ff6600', size: tamanhoFonte},
+        tickfont: {color: '#ff6600', size: tamanhoFonte},
+    },
+    yaxis2: {
+        title: 'Sinal',
+        titlefont: {color: '#0039e6', size: tamanhoFonte},
+        tickfont: {color: '#0039e6', size: tamanhoFonte},
         overlaying: 'y',
         side: 'right'
     }
