@@ -23,14 +23,6 @@ readTextFile("correlacao.txt");
 
 var m = 0, n = 0
 var pontos = 1280
-/* var matriz = new Array(pontos);
-
-for (var k = 0; k < matriz.length; k++)
-    matriz[k] = new Array(3);
-
-for (var k=0; k<=pontos-1; k++)
-	for (var p=0; p<3; p++)
-        matriz[k][p] = '';  */
 
 var posicao = [], sinal = [], autocorrelacao = []
 
@@ -74,9 +66,9 @@ for (var k=0; k<=pontos-1; k++)
 
 
 
-var trace1 = {
+var sinal = {
     x: posicao,
-    y: autocorrelacao,
+    y: sinal,
     name: "Sinal",
     type: "line",
     line: {
@@ -85,14 +77,13 @@ var trace1 = {
       }
 };
 
-var trace2 = {
+var autocorrelacao = {
     x: posicao,
-    y: sinal,
+    y: autocorrelacao,
     name: "Autocorrelação",
     type: "line",
-    yaxis: 'y2',
     line: {
-        color: '#0039e6',
+        color: '#0039e6',   //azul
         width: 2
       }
 };
@@ -100,19 +91,25 @@ var trace2 = {
 var tamanhoFonte = 16
 
 
-var data = [trace1, trace2];
-var layout = {
-    yaxis1: {
-        title: 'Autocorrelação',
-        titlefont: {color: '#ff6600', size: tamanhoFonte},
-        tickfont: {color: '#ff6600', size: tamanhoFonte},
+var dataSinal = [sinal];
+var layoutSinal = {
+    title: {
+        text:'Sinal',
+        font: {
+          size: 20
+        },
+        xref: 'paper',
+        x: 0.5,
+      },
+    xaxis: {
+        title: 'pixels',
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
     },
-    yaxis2: {
+    yaxis: {
         title: 'Sinal',
-        titlefont: {color: '#0039e6', size: tamanhoFonte},
-        tickfont: {color: '#0039e6', size: tamanhoFonte},
-        overlaying: 'y',
-        side: 'right'
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
     },
     legend: {
         x: 0.8,
@@ -125,9 +122,29 @@ var layout = {
       }
 };
 
-//var grafico = document.getElementById('grafico');
+var dataAutocorrelacao = [autocorrelacao];
+var layoutAutocorrelacao = {
+    title: {
+        text:'Autocorrelação',
+        font: {
+          size: 20
+        },
+        xref: 'paper',
+        x: 0.5,
+      },
+    xaxis: {
+        title: 'delay',
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
+    },
+    yaxis: {
+        title: 'Autocorrelação',
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
+    },
+};
 
-Plotly.newPlot('grafico', data, layout, function (err, msg) {
-	//if (err) return console.log(err);
-	//console.log(msg);
-});
+
+Plotly.newPlot('graficoSinal', dataSinal, layoutSinal, function (err, msg) {});
+
+Plotly.newPlot('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, function (err, msg) {});

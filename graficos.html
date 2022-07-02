@@ -6,11 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gráficos</title>
 
+    <style>
+        .grid-container {
+          display: grid;
+          grid-template-columns: auto auto;
+          gap: 10px;
+          padding: 10px;
+        }      
+    </style>
+
     <script src="plotly-2.12.1.min.js"></script>
 </head>
 <body>
-    
-    <div id="grafico" style="width: 1200px; height:600px;"></div>
+
+    <div class="grid-container">
+        <div id="graficoSinal" style="width: 700px; height:500px;"></div>
+
+        <div id="graficoAutocorrelacao" style="width: 700px; height:500px;"></div>
+    </div>
 
     <script src="graficos.js"></script>
 </body>

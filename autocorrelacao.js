@@ -52,43 +52,6 @@ function escreverArquivo(caminho,texto){
 
 
 
-//exportação dos pixels da imagem para dados.txt
-/* -------------------------------------------------------------*/
-
-const src = "imagem4.jpg";
-var dadosImg = "", pix = []
-
-getPixels(src, function(err, pixels) {
-  if(err) {
-    console.log("Caminho errado");
-    return;
-  }
-
-  for (let y = 0; y < pixels.shape[1]; y++) {
-    for (let x = 0; x < pixels.shape[0]; x++) {
-
-      const r = pixels.get(x, y, 0);
-      //const g = pixels.get(x, y, 1);
-      //const b = pixels.get(x, y, 2);
-      //const a = pixels.get(x, y, 3);
-      //const rgba = `color: rgba(${r}, ${g}, ${b}, ${a});`;
-      dadosImg = dadosImg + r + " "
-
-      if (y === Math.floor(0.5*pixels.shape[1]))
-      {
-        pix[x] = r
-      }
-        
-    }
-    dadosImg = dadosImg + "\n"
-  }
-
-  escreverArquivo(pathMatriz, dadosImg)
-});
-
-/* -------------------------------------------------------------*/
-
-
 
 var dados = ""
 var eixoX = [], funcao = [], ACF = [];
@@ -102,14 +65,98 @@ var tipoSinal = "gaussianaRuidoAleatorio"
 //aleatorio  aleatorioRuidoSenoidal
 
 
+//Sinal de sinalEntrada
+var tipoCorrelacao = "radial"
+//radial  linha
+
+if (padrao === true)
+    tipoCorrelacao = "linha"
+
+var linha = 0.5
+var raio = 250
+
+
+
+
+//exportação dos pixels da imagem para matriz.txt
+/* -------------------------------------------------------------*/
+
+const src = "imagem2.jpg";
+var dadosImg = "", pixel = []
+
+
+getPixels(src, function(err, pixels) {
+  if(err) {
+    console.log("Caminho errado");
+    return;
+  }
+
+    if (tipoCorrelacao === "linha")
+    {
+        for (let y = 0; y < pixels.shape[1]; y++) {
+            for (let x = 0; x < pixels.shape[0]; x++) {
+
+                const r = pixels.get(x, y, 0);
+                dadosImg = dadosImg + r + " "
+
+                if (y === Math.floor(linha*pixels.shape[1]))
+                {
+                    pixel[x] = r
+                }
+            
+            }
+            dadosImg = dadosImg + "\n"
+        }
+    }
+        
+    if (tipoCorrelacao === "radial")
+    {
+        const x0 = 478
+        const y0 = 786
+        var intRadial, intensidade, thetaRad
+
+        for (var R = 0; R < raio; R++)
+        {
+            intRadial = 0
+            
+            for (var theta = 0; theta < 360; theta++)
+            {
+                thetaRad = 1*Math.PI*theta/180.0
+
+                intensidade = pixels.get(Math.floor(x0 + R*Math.cos(thetaRad)), Math.floor(y0 + R*Math.sin(thetaRad)), 0);
+
+                intRadial = intRadial + intensidade
+
+                if (R === 10)
+                {
+                    console.log(x0 + R*Math.cos(thetaRad)), Math.floor(y0 + R*Math.sin(thetaRad))
+                }
+            }
+
+            pixel[R] = intensidade/360
+            //console.log(pixel[R])
+        }
+    }
+
+  escreverArquivo(pathMatriz, dadosImg)
+});
+
+/* -------------------------------------------------------------*/
+
+
+
+
 //Função síncrona
 function sinalEntrada(){
     setTimeout(function(){
         
     },3000);
-    while(pix[6] === undefined) {
+    while(pixel[6] === undefined) {
       require('deasync').sleep(100);
     }
+
+    if (tipoCorrelacao === "radial")
+        N = raio
 
     for (t=0; t<=N-1; t++)
     {
@@ -134,7 +181,7 @@ function sinalEntrada(){
         }
 
         if (padrao === false)
-            funcao[t] = pix[t]
+            funcao[t] = pixel[t]
 
         fMed = fMed + funcao[t]
     }
@@ -142,13 +189,13 @@ function sinalEntrada(){
 
 sinalEntrada()
 
-
-
-
-
-
-
 fMed = fMed/N
+
+
+
+
+
+
 
 for(tau=0; tau<=N-1; tau++)
     ACF[tau] = 0
@@ -158,15 +205,15 @@ for(tau=0; tau<=N-1; tau++)
 //Normalização
 for (t=0; t<=N-1; t++)
 {
-    norm = norm + funcao[t] * funcao[t]
+    norm = norm + (funcao[t] - fMed) * (funcao[t] - fMed)
 }
 
-
+//Autocorrelação
 for (tau=0; tau<=N-1; tau++)
 {
     for (t=tau; t<=N-1; t++)
     {
-        ACF[tau] = ACF[tau] + funcao[t] * funcao[t-tau]
+        ACF[tau] = ACF[tau] + (funcao[t] - fMed) * (funcao[t-tau] - fMed)
     }
 
     ACF[tau] = ACF[tau]/norm
@@ -186,7 +233,7 @@ escreverArquivo(pathCorrelacao, dados)
 
 
 
-
+//Geração de gráfico online
 var trace1 = {
     x: eixoX,
     y: funcao,
