@@ -156,6 +156,8 @@ for (var k=0; k<=N-1; k++)
 var tamanhoFonte = 16
 
 
+
+
 var cont = 0
 function montarSinal()
 {
@@ -243,6 +245,9 @@ function montarSinal()
 
                 document.getElementById("rangeVariavel2").hidden = true
                 document.getElementById("p2").hidden = true
+
+                //range0 = -65
+                //range1 = 65
 
                 cont = 0
             }
@@ -366,8 +371,13 @@ function calcularCorrelacao()
 
 
 
+var dataSinal
+var layoutSinal
+var dataAutocorrelacao
+var layoutAutocorrelacao
+var range0 = -0.3, range1 = 1.3
 
-function plotarSinal()
+function calculosConfigFuncao()
 {
     sinalEntrada()
 
@@ -388,8 +398,8 @@ function plotarSinal()
           }
     };
 
-    var dataSinal = [curvaSinal];
-    var layoutSinal = {
+    dataSinal = [curvaSinal];
+    layoutSinal = {
     title: {
         text:'Sinal',
         font: {
@@ -407,6 +417,7 @@ function plotarSinal()
         title: 'Sinal',
         titlefont: {size: tamanhoFonte},
         tickfont:  {size: tamanhoFonte},
+        //range: [range0, range1],
     },
     legend: {
         x: 0.8,
@@ -419,7 +430,6 @@ function plotarSinal()
       }
     };
 
-
     var curvaAutocorrelacao = {
         x: delay,
         y: autocorrelacao,
@@ -431,8 +441,8 @@ function plotarSinal()
           }
     };
     
-    var dataAutocorrelacao = [curvaAutocorrelacao];
-    var layoutAutocorrelacao = {
+    dataAutocorrelacao = [curvaAutocorrelacao];
+    layoutAutocorrelacao = {
         title: {
             text:'Autocorrelação',
             font: {
@@ -452,10 +462,66 @@ function plotarSinal()
             tickfont:  {size: tamanhoFonte},
         },
     };
+}
 
+calculosConfigFuncao()
+
+var chave = true
+
+document.getElementById('botoes').onclick = function() {
+    chave = true
+};
+
+document.getElementById('sliders').onclick = function() {
+    chave = true
+};
+
+function rePlots()
+{
     Plotly.newPlot('graficoSinal', dataSinal, layoutSinal, function (err, msg) {});
 
     Plotly.newPlot('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, function (err, msg) {});
 }
+
+rePlots()
+
+
+
+function update()
+{
+    calculosConfigFuncao()
+
+    if (chave === true)
+    {
+        rePlots()
+        chave = false
+    }
+
+    Plotly.animate('graficoSinal', dataSinal, layoutSinal, {
+        transition: {
+          duration: 200,
+        },
+        frame: {
+          duration: 200,
+          redraw: false,
+        }
+      });
+
+    Plotly.animate('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, {
+        transition: {
+          duration: 200,
+        },
+        frame: {
+          duration: 200,
+          redraw: false,
+        }
+      });
+
+    requestAnimationFrame(update);
+}
+requestAnimationFrame(update);
+
+
+
 //plotarSinal()
-setInterval(function() {plotarSinal()}, 500);
+//setInterval(function() {plotarSinal()}, 500);
