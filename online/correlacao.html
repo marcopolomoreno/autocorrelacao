@@ -13,6 +13,48 @@
           gap: 10px;
           padding: 10px;
         }      
+        p {
+            display: block;
+            margin-block-start: 0em;
+            margin-block-end: 0.2em;
+            margin-inline-start: 0px;
+            margin-inline-end: 0px;
+        }
+
+        .slidecontainer {
+            width: 50%;
+        }
+
+        .slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 25px;
+            background: #d3d3d3;
+            outline: none;
+            opacity: 0.7;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
+
+        .slider:hover {
+            opacity: 1;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background: #1d1f1f;
+            cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background: #161616;
+            cursor: pointer;
+        }
     </style>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
@@ -22,29 +64,34 @@
 <body>
 
     <div class="grid-container">
-        <button>teste</button>
-
-        <button onclick="plotarCorrelacao()">Calcular</button>
-    </div>
-
-    <div class="grid-container">
         <form class="w3-container w3-card-4">
             <h3>Funções</h3>
-            <p>
-            <input id="gaussiana" class="w3-radio" type="radio" name="tipoSinal" value="gaussiana" checked>
-            <label>Gaussiana</label></p>
-            <p>
-            <input id="gaussianaRuidoAleatorio" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoAleatorio">
-            <label>Gaussiana com ruído aleatório</label></p>
-            <p>
-            <input id="gaussianaRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoSenoidal">
-            <label>Gaussiana com ruído senoidal</label></p>
-            <p>
-            <input id="aleatorio" class="w3-radio" type="radio" name="tipoSinal" value="">
-            <label>Ruído aleatório</label></p>
-            <p>
-            <input id="aleatorioRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="">
-            <label>Ruído aleatório com funco senoidal</label></p>
+            <div class="grid-container">
+                <p>
+                    <input id="gaussianaRuidoAleatorio" class="w3-radio" type="radio" name="tipoSinal" checked value="gaussianaRuidoAleatorio">
+                    <label>Gaussiana com ruído aleatório</label>
+                </p>
+                <p>
+                    <input id="gaussianaRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoSenoidal">
+                    <label>Gaussiana com ruído senoidal</label>
+                </p>
+                <p>
+                    <input id="gaussianaCavada" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaCavada">
+                    <label>Gaussiana com buraco</label>
+                </p>
+                <p>
+                    <input id="hermiteGauss" class="w3-radio" type="radio" name="tipoSinal" value="">
+                    <label>Hermite Gauss</label>
+                </p>
+                <p>
+                    <input id="aleatorio" class="w3-radio" type="radio" name="tipoSinal" value="">
+                    <label>Ruído aleatório</label>
+                </p>
+                <p>
+                    <input id="aleatorioRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="">
+                    <label>Ruído aleatório com fundo senoidal</label>
+                </p>
+            </div>
         </form>
 
         <form class="w3-container w3-card-4">
@@ -56,6 +103,18 @@
             <input id="subtraindoMedia" class="w3-radio" type="radio" name="media" value="comMedia">
             <label>Subtraindo média</label></p>
         </form>
+    </div>
+
+    <div class="grid-container">
+        <div class="slidecontainer">
+            <input type="range" min="-100" max="100" value="0" class="slider" id="rangeVariavel1">
+            <p id="variavel1">Posição: <span id="variavel1"></span></p>
+        </div>
+
+        <div class="slidecontainer">
+            <input type="range" min="0" max="100" value="20" class="slider" id="rangeVariavel2">
+            <p id="variavel2">Posição: <span id="variavel2"></span></p>
+        </div>
     </div>
 
     

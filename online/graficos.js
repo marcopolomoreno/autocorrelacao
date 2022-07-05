@@ -11,7 +11,6 @@ function readTextFile(file)
             if(rawFile.status === 200 || rawFile.status == 0)
             {
                 arquivo = rawFile.responseText;
-                //alert(arquivo);
             }
         }
     }
@@ -26,7 +25,7 @@ var tipoCorrelacao
 
 var dados = ""
 var eixoX = [], funcao = [], ACF = [];
-var fMed = 0, N = 1280, norm = 0;
+var fMed = 0, N = 1000, norm = 0;
 
 //Sinal padrão
 var padrao = true
@@ -35,19 +34,51 @@ var tipoSinal
 //aleatorio  aleatorioRuidoSenoidal
 var funcaoGaussiana = [], funcaoGaussianaRuidoSenoidal = []
 var funcaoGaussianaRuidoAleatorio = [], funcaoAleatoria = []
-var funcaoRuidoSenoidal = []
+var funcaoRuidoSenoidal = [], funcaoGaussianaCavada = []
+var funcaoHermiteGauss = []
+
+
+//Slider
+var sliderVariavel1 = document.getElementById("rangeVariavel1");
+var outputVariavel1 = document.getElementById("variavel1");
+outputVariavel1.innerHTML = sliderVariavel1.value;
+
+sliderVariavel1.oninput = function() {
+    outputVariavel1.innerHTML = this.value;
+}
+
+var sliderVariavel2 = document.getElementById("rangeVariavel2");
+var outputVariavel2 = document.getElementById("variavel2");
+outputVariavel2.innerHTML = sliderVariavel2.value;
+
+sliderVariavel2.oninput = function() {
+    outputVariavel2.innerHTML = this.value;
+}
+
 
 
 const src = "imagem2.jpg";
 var dadosImg = "", pixel = []
 
+
+
+function parametros()
+{
+    sliderVariavel1.value = document.getElementById("variavel1").innerHTML
+    sliderVariavel2.value = document.getElementById("variavel2").innerHTML
+
+    variavel1 = Number(sliderVariavel1.value);
+    variavel2 = Number(sliderVariavel2.value);
+}
+
+
 //Função síncrona
-function sinalEntrada(){
+/* function sinalEntrada(){
     setTimeout(function(){
         
-    },3000);
+    },3000); */
 
-
+function sinalEntrada(){
     if (tipoCorrelacao === "radial")
         N = raio
 
@@ -57,11 +88,17 @@ function sinalEntrada(){
 
         if (padrao === true)
         {
-            funcaoGaussiana[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
+            //funcaoGaussiana[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
 
-            funcaoGaussianaRuidoSenoidal[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*Math.cos(0.5*t)
+            funcaoGaussianaRuidoSenoidal[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.005*variavel2*Math.cos(0.5*t)
 
-            funcaoGaussianaRuidoAleatorio[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.1*( Math.random()-0.5 )
+            funcaoGaussianaRuidoAleatorio[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.02*variavel2*( Math.random()-0.5 )
+            
+            funcaoGaussianaCavada[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
+            if (t > N/2 + variavel1 - variavel2 && t < N/2 + variavel1 + variavel2)
+                funcaoGaussianaCavada[t] = 0
+
+            funcaoHermiteGauss[t] = (t - N/2)*Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
 
             funcaoAleatoria[t] = Math.random()-0.5
 
@@ -76,19 +113,15 @@ function sinalEntrada(){
     }
 }
 
-sinalEntrada()
-
-
 
 
 
 
 var m = 0, n = 0
-var pontos = 1280
 
-var posicao = [], sinal = [], autocorrelacao = []
+var posicao = [], sinal = [], delay = [], autocorrelacao = []
 
-for (var k=0; k<=pontos-1; k++)
+for (var k=0; k<=N-1; k++)
 {
     posicao[k] = ""
     sinal[k] = ""
@@ -98,12 +131,6 @@ for (var k=0; k<=pontos-1; k++)
 
 
 
-/* for (var k=0; k<=pontos-1; k++)
-{
-    posicao[k] = Number(posicao[k])
-    sinal[k] = Number(sinal[k])
-    autocorrelacao[k] = Number(autocorrelacao[k])
-} */
 
 //console.log(arquivo)
 //console.log(posicao)
@@ -119,18 +146,21 @@ function montarSinal()
     {
         fMed = 0
         
-        for (var k=0; k<=pontos-1; k++)
+        for (var k=0; k<=N-1; k++)
         {
             posicao[k] = k
-
-            if ( document.getElementById("gaussiana").checked )
-                sinal[k] = funcaoGaussiana[k]
         
             if ( document.getElementById("gaussianaRuidoAleatorio").checked )
                 sinal[k] = funcaoGaussianaRuidoAleatorio[k]
             
             if ( document.getElementById("gaussianaRuidoSenoidal").checked )
                 sinal[k] = funcaoGaussianaRuidoSenoidal[k]
+
+            if ( document.getElementById("gaussianaCavada").checked )
+                sinal[k] = funcaoGaussianaCavada[k]
+
+            if ( document.getElementById("hermiteGauss").checked )
+                sinal[k] = funcaoHermiteGauss[k]
 
             if ( document.getElementById("aleatorio").checked )
                 sinal[k] = funcaoAleatoria[k]
@@ -162,6 +192,7 @@ function montarSinal()
                 m++
             }
         }
+
     if ( document.getElementById("semSubtrairMedia").checked )
         fMed = 0
 
@@ -170,9 +201,6 @@ function montarSinal()
 }
 
 
-//Correlação
-for(tau=0; tau<=N-1; tau++)
-    autocorrelacao[tau] = 0
 
 
 var norm
@@ -182,6 +210,9 @@ var norm
 function calcularCorrelacao()
 {
     norm = 0;
+
+    for(tau=0; tau<=N-1; tau++)
+        autocorrelacao[tau] = 0
 
     for (t=0; t<=N-1; t++)
     {
@@ -198,10 +229,18 @@ function calcularCorrelacao()
         autocorrelacao[tau] = autocorrelacao[tau]/norm
     }
 
-    /* for (tau=0; tau<=N-1; tau++)
+    for (tau=0; tau<=2*N-1; tau++)
+        delay[tau] = tau - N
+        
+    for (tau=N; tau<=2*N-1; tau++)
     {
-        autocorrelacao[-tau] = autocorrelacao[tau]
-    } */
+        autocorrelacao[tau] = autocorrelacao[tau-N]
+    }
+
+    for (tau=0; tau<=N-1; tau++)
+    {
+        autocorrelacao[tau] = autocorrelacao[2*N-tau]
+    }
 }
 
 
@@ -209,6 +248,10 @@ function calcularCorrelacao()
 
 function plotarSinal()
 {
+    sinalEntrada()
+
+    parametros()
+
     montarSinal()
 
     calcularCorrelacao()
@@ -257,7 +300,7 @@ function plotarSinal()
 
 
     var curvaAutocorrelacao = {
-        x: posicao,
+        x: delay,
         y: autocorrelacao,
         name: "Autocorrelação",
         type: "line",
@@ -293,5 +336,5 @@ function plotarSinal()
 
     Plotly.newPlot('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, function (err, msg) {});
 }
-
-setInterval(function() {plotarSinal()}, 200);
+//plotarSinal()
+setInterval(function() {plotarSinal()}, 500);
