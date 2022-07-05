@@ -35,7 +35,8 @@ var tipoSinal
 var funcaoGaussiana = [], funcaoGaussianaRuidoSenoidal = []
 var funcaoGaussianaRuidoAleatorio = [], funcaoAleatoria = []
 var funcaoRuidoSenoidal = [], funcaoGaussianaCavada = []
-var funcaoHermiteGauss = []
+var funcaoHermiteGauss = [], funcaoRuidoBrowniano = []
+var distribuicaoNormal = []
 
 
 //Slider
@@ -56,6 +57,18 @@ sliderVariavel2.oninput = function() {
 }
 
 
+function jogarDados(p)
+{
+	var s, k;
+    s = 0;
+    for (k=1; k<=p; k++)
+    	s = s + Math.floor( 100*Math.random() );
+    return ( s/(99*p)-0.5 );
+}
+
+var Ndados = 40;
+
+
 
 const src = "imagem2.jpg";
 var dadosImg = "", pixel = []
@@ -71,7 +84,6 @@ function parametros()
     variavel2 = Number(sliderVariavel2.value);
 }
 
-
 //Função síncrona
 /* function sinalEntrada(){
     setTimeout(function(){
@@ -82,6 +94,8 @@ function sinalEntrada(){
     if (tipoCorrelacao === "radial")
         N = raio
 
+    funcaoRuidoBrowniano[0] = 0
+
     for (t=0; t<=N-1; t++)
     {
         eixoX[t] = t
@@ -90,7 +104,8 @@ function sinalEntrada(){
         {
             //funcaoGaussiana[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
 
-            funcaoGaussianaRuidoSenoidal[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.005*variavel2*Math.cos(0.5*t)
+            funcaoGaussianaRuidoSenoidal[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 
+                        0.005*variavel2*Math.cos(0.01*variavel1*t)
 
             funcaoGaussianaRuidoAleatorio[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 )) + 0.02*variavel2*( Math.random()-0.5 )
             
@@ -98,11 +113,16 @@ function sinalEntrada(){
             if (t > N/2 + variavel1 - variavel2 && t < N/2 + variavel1 + variavel2)
                 funcaoGaussianaCavada[t] = 0
 
+            if (t > 0)
+                funcaoRuidoBrowniano[t] = funcaoRuidoBrowniano[t-1] + 0.001*variavel2*jogarDados(Ndados)
+
+            distribuicaoNormal[t] = 0.01*jogarDados(Ndados)
+
             funcaoHermiteGauss[t] = (t - N/2)*Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
 
             funcaoAleatoria[t] = Math.random()-0.5
 
-            funcaoRuidoSenoidal[t] = Math.random()-0.5 + 0.02*Math.cos(0.02*t)
+            funcaoRuidoSenoidal[t] = Math.random()-0.5 + 0.02*variavel2*Math.cos(0.01*variavel1*t)
         }
 
         if (padrao === false)
@@ -112,7 +132,6 @@ function sinalEntrada(){
         }
     }
 }
-
 
 
 
@@ -130,8 +149,6 @@ for (var k=0; k<=N-1; k++)
 
 
 
-
-
 //console.log(arquivo)
 //console.log(posicao)
 
@@ -139,7 +156,7 @@ for (var k=0; k<=N-1; k++)
 var tamanhoFonte = 16
 
 
-
+var cont = 0
 function montarSinal()
 {
     if (padrao === true)
@@ -151,22 +168,126 @@ function montarSinal()
             posicao[k] = k
         
             if ( document.getElementById("gaussianaRuidoAleatorio").checked )
+            {
                 sinal[k] = funcaoGaussianaRuidoAleatorio[k]
-            
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = false
+                document.getElementById("p2").hidden = false
+                document.getElementById("label2").innerHTML = "Amplitude do ruído"
+
+                cont = 0
+            }
+                     
             if ( document.getElementById("gaussianaRuidoSenoidal").checked )
+            {
                 sinal[k] = funcaoGaussianaRuidoSenoidal[k]
+                document.getElementById("rangeVariavel1").hidden = false
+                document.getElementById("p1").hidden = false
+                document.getElementById("label1").innerHTML = "Frequência"
+
+                document.getElementById("rangeVariavel2").hidden = false
+                document.getElementById("p2").hidden = false
+                document.getElementById("label2").innerHTML = "Amplitude"
+
+                cont = 0
+            }
+                
+            if ( document.getElementById("gaussianaRuidoBrowniano").checked && cont === 0)
+            {
+                sinal[k] = Math.exp(-0.5*Math.pow( (eixoX[k]-N/2)/100, 2 )) + 5*funcaoRuidoBrowniano[k]
+                
+                if (k === N-1)
+                    cont = 1
+
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = false
+                document.getElementById("p2").hidden = false
+                document.getElementById("label2").innerHTML = "Amplitude do ruído"
+            }
+            
+            if ( document.getElementById("distribuicaoNormal").checked )
+            {
+                sinal[k] = distribuicaoNormal[k]
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = true
+                document.getElementById("p2").hidden = true
+
+                cont = 0
+            }
 
             if ( document.getElementById("gaussianaCavada").checked )
+            {
                 sinal[k] = funcaoGaussianaCavada[k]
+                document.getElementById("rangeVariavel1").hidden = false
+                document.getElementById("p1").hidden = false
+                document.getElementById("label1").innerHTML = "Posição"
 
+                document.getElementById("rangeVariavel2").hidden = false
+                document.getElementById("p2").hidden = false
+                document.getElementById("label2").innerHTML = "Largura do buraco"
+
+                cont = 0
+            }
+                
             if ( document.getElementById("hermiteGauss").checked )
+            {
                 sinal[k] = funcaoHermiteGauss[k]
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = true
+                document.getElementById("p2").hidden = true
+
+                cont = 0
+            }
 
             if ( document.getElementById("aleatorio").checked )
+            {
                 sinal[k] = funcaoAleatoria[k]
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = true
+                document.getElementById("p2").hidden = true
+
+                cont = 0
+            }
+                
 
             if ( document.getElementById("aleatorioRuidoSenoidal").checked )
+            {
                 sinal[k] = funcaoRuidoSenoidal[k]
+                document.getElementById("rangeVariavel1").hidden = false
+                document.getElementById("p1").hidden = false
+                document.getElementById("label1").innerHTML = "Frequência"
+
+                document.getElementById("rangeVariavel2").hidden = false
+                document.getElementById("p2").hidden = false
+                document.getElementById("label2").innerHTML = "Amplitude"
+
+                cont = 0
+            }
+                
+
+            if ( document.getElementById("ruidoBrowniano").checked && cont === 0 )
+            {
+                sinal[k] = funcaoRuidoBrowniano[k]
+
+                if (k === N-1)
+                    cont = 1
+
+                document.getElementById("rangeVariavel1").hidden = true
+                document.getElementById("p1").hidden = true
+
+                document.getElementById("rangeVariavel2").hidden = true
+                document.getElementById("p2").hidden = true
+            }
 
             fMed = fMed + sinal[k]
         }
