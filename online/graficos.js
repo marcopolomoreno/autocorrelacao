@@ -497,7 +497,7 @@ function calcularCorrelacao()
 {
     norm1 = 0, norm2 = 0
 
-    for(tau=0; tau<=N-1; tau++)
+    for(tau=0; tau<=2*N-1; tau++)
         correlacao[tau] = 0
 
     for (t=0; t<=N-1; t++)
@@ -506,28 +506,30 @@ function calcularCorrelacao()
         norm2 = norm2 + (sinal2[t] - fMed) * (sinal2[t] - fMed)
     }
 
-    for (tau=0; tau<=N-1; tau++)
+    for (tau=-N+1; tau<=N-1; tau++)
     {
-        for (t=tau; t<=N-1; t++)
-        {
-            correlacao[tau] = correlacao[tau] + (sinal1[t] - fMed) * (sinal2[t-tau] - fMed)
-        }
+        var indice = tau + N
 
-        correlacao[tau] = correlacao[tau]/Math.sqrt(norm1*norm2)
+        if (tau < 0)
+            for (t=0; t<=N-1+tau; t++)
+            {
+                correlacao[indice] = correlacao[indice] + (sinal1[t] - fMed) * (sinal2[t-tau] - fMed)
+            }
+        
+        if (tau >= 0)
+            for (t=tau; t<=N-1; t++)
+            {
+                correlacao[indice] = correlacao[indice] + (sinal1[t] - fMed) * (sinal2[t-tau] - fMed)
+            }
+
+        correlacao[indice] = correlacao[indice]/Math.sqrt(norm1*norm2)
     }
 
     for (tau=0; tau<=2*N-1; tau++)
         delay[tau] = tau - N
-        
-    for (tau=N; tau<=2*N-1; tau++)
-    {
-        correlacao[tau] = correlacao[tau-N]
-    }
 
-    for (tau=0; tau<=N-1; tau++)
-    {
-        correlacao[tau] = correlacao[2*N-tau]
-    }
+    for (tau=0; tau<=2*N-1; tau++)
+        delay[tau] = tau - N
 }
 
 
