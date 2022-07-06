@@ -246,9 +246,6 @@ function montarSinal()
                 document.getElementById("rangeVariavel2").hidden = true
                 document.getElementById("p2").hidden = true
 
-                //range0 = -65
-                //range1 = 65
-
                 cont = 0
             }
 
@@ -469,11 +466,13 @@ calculosConfigFuncao()
 var chave = true
 
 document.getElementById('botoes').onclick = function() {
+    cont = 0
     chave = true
 };
 
 document.getElementById('sliders').onclick = function() {
     chave = true
+    cont = 0
 };
 
 function rePlots()
