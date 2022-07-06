@@ -38,6 +38,10 @@ var funcaoRuidoSenoidal = [], funcaoGaussianaCavada = []
 var funcaoHermiteGauss = [], funcaoRuidoBrowniano = []
 var distribuicaoNormal = []
 
+//Correlação
+var funcaoGaussiana1 = [], funcaoHermiteGauss1 = []
+var funcaoGaussiana2 = [], funcaoHermiteGauss2 = []
+
 
 //Slider
 var sliderVariavel1 = document.getElementById("rangeVariavel1");
@@ -55,6 +59,40 @@ outputVariavel2.innerHTML = sliderVariavel2.value;
 sliderVariavel2.oninput = function() {
     outputVariavel2.innerHTML = this.value;
 }
+
+//Correlação
+var sliderVariavel1a = document.getElementById("rangeVariavel1a");
+var outputVariavel1a = document.getElementById("variavel1a");
+outputVariavel1a.innerHTML = sliderVariavel1a.value;
+
+sliderVariavel1a.oninput = function() {
+    outputVariavel1a.innerHTML = this.value;
+}
+
+var sliderVariavel2a = document.getElementById("rangeVariavel2a");
+var outputVariavel2a = document.getElementById("variavel2a");
+outputVariavel2a.innerHTML = sliderVariavel2a.value;
+
+sliderVariavel2a.oninput = function() {
+    outputVariavel2a.innerHTML = this.value;
+}
+
+var sliderVariavel1b = document.getElementById("rangeVariavel1b");
+var outputVariavel1b = document.getElementById("variavel1b");
+outputVariavel1b.innerHTML = sliderVariavel1b.value;
+
+sliderVariavel1b.oninput = function() {
+    outputVariavel1b.innerHTML = this.value;
+}
+
+var sliderVariavel2b = document.getElementById("rangeVariavel2b");
+var outputVariavel2b = document.getElementById("variavel2b");
+outputVariavel2b.innerHTML = sliderVariavel2b.value;
+
+sliderVariavel2b.oninput = function() {
+    outputVariavel2b.innerHTML = this.value;
+}
+
 
 
 function jogarDados(p)
@@ -82,6 +120,18 @@ function parametros()
 
     variavel1 = Number(sliderVariavel1.value);
     variavel2 = Number(sliderVariavel2.value);
+
+    sliderVariavel1a.value = document.getElementById("variavel1a").innerHTML
+    sliderVariavel2a.value = document.getElementById("variavel2a").innerHTML
+
+    variavel1a = Number(sliderVariavel1a.value);
+    variavel2a = Number(sliderVariavel2a.value);
+
+    sliderVariavel1b.value = document.getElementById("variavel1b").innerHTML
+    sliderVariavel2b.value = document.getElementById("variavel2b").innerHTML
+
+    variavel1b = Number(sliderVariavel1b.value);
+    variavel2b = Number(sliderVariavel2b.value);
 }
 
 //Função síncrona
@@ -123,6 +173,19 @@ function sinalEntrada(){
             funcaoAleatoria[t] = Math.random()-0.5
 
             funcaoRuidoSenoidal[t] = Math.random()-0.5 + 0.02*variavel2*Math.cos(0.01*variavel1*t)
+
+            //correlacao
+            funcaoGaussiana1[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/(2*variavel1a), 2 )) + 
+                                    0.02*variavel1b*( Math.random()-0.5 )
+
+            funcaoGaussiana2[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/(2*variavel2a), 2 )) + 
+                                    0.02*variavel2b*( Math.random()-0.5 )
+
+            funcaoHermiteGauss1[t] = (t - N/2)/(0.02*N) * Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/variavel1a, 2 )) + 
+                                    0.02*variavel1b*( Math.random()-0.5 )
+
+            funcaoHermiteGauss2[t] = (t - N/2)/(0.02*N) * Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/variavel2a, 2 )) + 
+                                    0.02*variavel2b*( Math.random()-0.5 )
         }
 
         if (padrao === false)
@@ -139,12 +202,17 @@ function sinalEntrada(){
 var m = 0, n = 0
 
 var posicao = [], sinal = [], delay = [], autocorrelacao = []
+var sinal1 = [], sinal2 = [], correlacao = []
 
 for (var k=0; k<=N-1; k++)
 {
     posicao[k] = ""
     sinal[k] = ""
     autocorrelacao[k] = ""
+
+    sinal1[k] = ""
+    sinal2[k] = ""
+    correlacao[k] = ""
 }
 
 
@@ -292,6 +360,64 @@ function montarSinal()
             }
 
             fMed = fMed + sinal[k]
+
+            //Correlacao ************************************************
+
+            if ( document.getElementById("gaussiana1").checked )
+            {
+                sinal1[k] = funcaoGaussiana1[k]
+                document.getElementById("rangeVariavel1a").hidden = false
+                document.getElementById("p1a").hidden = false
+                document.getElementById("label1a").innerHTML = "Largura"
+
+                document.getElementById("rangeVariavel1b").hidden = false
+                document.getElementById("p1b").hidden = false
+                document.getElementById("label1b").innerHTML = "Amplitude do ruído"
+
+                //cont = 0
+            }
+
+            if ( document.getElementById("gaussiana2").checked )
+            {
+                sinal2[k] = funcaoGaussiana2[k]
+                document.getElementById("rangeVariavel2a").hidden = false
+                document.getElementById("p2a").hidden = false
+                document.getElementById("label2a").innerHTML = "Largura"
+
+                document.getElementById("rangeVariavel2b").hidden = false
+                document.getElementById("p2b").hidden = false
+                document.getElementById("label2b").innerHTML = "Amplitude do ruído"
+
+                //cont = 0
+            }
+
+            if ( document.getElementById("hermiteGauss1").checked )
+            {
+                sinal1[k] = funcaoHermiteGauss1[k]
+                document.getElementById("rangeVariavel1a").hidden = false
+                document.getElementById("p1a").hidden = false
+                document.getElementById("label1a").innerHTML = "Largura"
+
+                document.getElementById("rangeVariavel1b").hidden = false
+                document.getElementById("p1b").hidden = false
+                document.getElementById("label1b").innerHTML = "Amplitude do ruído"
+
+                //cont = 0
+            }
+
+            if ( document.getElementById("hermiteGauss2").checked )
+            {
+                sinal2[k] = funcaoHermiteGauss2[k]
+                document.getElementById("rangeVariavel2a").hidden = false
+                document.getElementById("p2a").hidden = false
+                document.getElementById("label2a").innerHTML = "Largura"
+
+                document.getElementById("rangeVariavel2b").hidden = false
+                document.getElementById("p2b").hidden = false
+                document.getElementById("label2b").innerHTML = "Amplitude do ruído"
+
+                //cont = 0
+            }
         }
     }
     else
@@ -326,11 +452,11 @@ function montarSinal()
 
 
 
-var norm
+var norm, norm1, norm2
 
 
 
-function calcularCorrelacao()
+function calcularAutocorrelacao()
 {
     norm = 0;
 
@@ -367,23 +493,58 @@ function calcularCorrelacao()
 }
 
 
+function calcularCorrelacao()
+{
+    norm1 = 0, norm2 = 0
+
+    for(tau=0; tau<=N-1; tau++)
+        correlacao[tau] = 0
+
+    for (t=0; t<=N-1; t++)
+    {
+        norm1 = norm1 + (sinal1[t] - fMed) * (sinal1[t] - fMed)
+        norm2 = norm2 + (sinal2[t] - fMed) * (sinal2[t] - fMed)
+    }
+
+    for (tau=0; tau<=N-1; tau++)
+    {
+        for (t=tau; t<=N-1; t++)
+        {
+            correlacao[tau] = correlacao[tau] + (sinal1[t] - fMed) * (sinal2[t-tau] - fMed)
+        }
+
+        correlacao[tau] = correlacao[tau]/Math.sqrt(norm1*norm2)
+    }
+
+    for (tau=0; tau<=2*N-1; tau++)
+        delay[tau] = tau - N
+        
+    for (tau=N; tau<=2*N-1; tau++)
+    {
+        correlacao[tau] = correlacao[tau-N]
+    }
+
+    for (tau=0; tau<=N-1; tau++)
+    {
+        correlacao[tau] = correlacao[2*N-tau]
+    }
+}
+
+
 
 var dataSinal
 var layoutSinal
 var dataAutocorrelacao
 var layoutAutocorrelacao
-var range0 = -0.3, range1 = 1.3
 
-function calculosConfigFuncao()
+var dataSinal12
+var layoutSinal12
+var dataCorrelacao
+var layoutCorrelacao
+
+
+function configGraficoAutocorrelacao()
 {
-    sinalEntrada()
-
-    parametros()
-
-    montarSinal()
-
-    calcularCorrelacao()
-
     var curvaSinal = {
         x: posicao,
         y: sinal,
@@ -461,9 +622,123 @@ function calculosConfigFuncao()
     };
 }
 
+
+function configGraficoCorrelacao()
+{
+    var curvaSinal1 = {
+        x: posicao,
+        y: sinal1,
+        name: "Sinal 1",
+        type: "line",
+        line: {
+            color: '#ff6600',
+            width: 2
+          }
+    };
+
+    var curvaSinal2 = {
+        x: posicao,
+        y: sinal2,
+        name: "Sinal 2",
+        type: "line",
+        line: {
+            color: '#00cc66',
+            width: 2
+          }
+    };
+
+    dataSinal12 = [curvaSinal1, curvaSinal2];
+    layoutSinal12 = {
+    title: {
+        text:'Sinais',
+        font: {
+          size: 20
+        },
+        xref: 'paper',
+        x: 0.5,
+      },
+    xaxis: {
+        title: 'pixels',
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
+    },
+    yaxis: {
+        title: 'Sinais',
+        titlefont: {size: tamanhoFonte},
+        tickfont:  {size: tamanhoFonte},
+    },
+    legend: {
+        x: 0.8,
+        y: 1,
+        traceorder: 'normal',
+        font: {
+          size: tamanhoFonte,
+        },
+        borderwidth: 1.5
+      }
+    };
+
+    var curvaCorrelacao = {
+        x: delay,
+        y: correlacao,
+        name: "Correlação",
+        type: "line",
+        line: {
+            color: '#0039e6',   //azul
+            width: 2
+          }
+    };
+    
+    dataCorrelacao = [curvaCorrelacao];
+    layoutCorrelacao = {
+        title: {
+            text:'Correlação',
+            font: {
+              size: 20
+            },
+            xref: 'paper',
+            x: 0.5,
+          },
+        xaxis: {
+            title: 'delay',
+            titlefont: {size: tamanhoFonte},
+            tickfont:  {size: tamanhoFonte},
+        },
+        yaxis: {
+            title: 'Correlação',
+            titlefont: {size: tamanhoFonte},
+            tickfont:  {size: tamanhoFonte},
+        },
+    };
+}
+
+
+
+function calculosConfigFuncao()
+{
+    sinalEntrada()
+
+    parametros()
+
+    montarSinal()
+
+    if (document.getElementById("autocorrelacao-tab").ariaSelected === "true")
+    {
+        calcularAutocorrelacao()
+        configGraficoAutocorrelacao()
+    }
+
+    //if (document.getElementById("correlacao-tab").ariaSelected === "true")
+    {
+        calcularCorrelacao()
+        configGraficoCorrelacao()
+    }
+}
+
+
 calculosConfigFuncao()
 
-var chave = true
+var chave = true, chave12 = true
 
 document.getElementById('botoes').onclick = function() {
     cont = 0
@@ -475,6 +750,16 @@ document.getElementById('sliders').onclick = function() {
     cont = 0
 };
 
+document.getElementById('botoes12').onclick = function() {
+    cont = 0
+    chave12 = true
+};
+
+document.getElementById('sliders12').onclick = function() {
+    chave12 = true
+    cont = 0
+};
+
 function rePlots()
 {
     Plotly.newPlot('graficoSinal', dataSinal, layoutSinal, function (err, msg) {});
@@ -482,7 +767,15 @@ function rePlots()
     Plotly.newPlot('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, function (err, msg) {});
 }
 
+function rePlots12()
+{
+    Plotly.newPlot('graficoSinal12', dataSinal12, layoutSinal12, function (err, msg) {});
+
+    Plotly.newPlot('graficoCorrelacao', dataCorrelacao, layoutCorrelacao, function (err, msg) {});
+}
+
 rePlots()
+rePlots12()
 
 
 
@@ -496,31 +789,59 @@ function update()
         chave = false
     }
 
-    Plotly.animate('graficoSinal', dataSinal, layoutSinal, {
-        transition: {
-          duration: 200,
-        },
-        frame: {
-          duration: 200,
-          redraw: false,
-        }
-      });
+    if (chave12 === true)
+    {
+        rePlots12()
+        chave12 = false
+    }
 
-    Plotly.animate('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, {
-        transition: {
-          duration: 200,
-        },
-        frame: {
-          duration: 200,
-          redraw: false,
-        }
-      });
+    if (document.getElementById("autocorrelacao-tab").ariaSelected === "true")
+    {
+        Plotly.animate('graficoSinal', dataSinal, layoutSinal, {
+            transition: {
+            duration: 200,
+            },
+            frame: {
+            duration: 200,
+            redraw: false,
+            }
+        });
+
+        Plotly.animate('graficoAutocorrelacao', dataAutocorrelacao, layoutAutocorrelacao, {
+            transition: {
+            duration: 200,
+            },
+            frame: {
+            duration: 200,
+            redraw: false,
+            }
+        });
+    }
+
+    if (document.getElementById("correlacao-tab").ariaSelected === "true")
+    {
+        Plotly.animate('graficoSinal12', dataSinal, layoutSinal, {
+            transition: {
+            duration: 200,
+            },
+            frame: {
+            duration: 200,
+            redraw: false,
+            }
+        });
+
+        Plotly.animate('graficoCorrelacao', dataAutocorrelacao, layoutAutocorrelacao, {
+            transition: {
+            duration: 200,
+            },
+            frame: {
+            duration: 200,
+            redraw: false,
+            }
+        });
+    }
 
     requestAnimationFrame(update);
 }
+
 requestAnimationFrame(update);
-
-
-
-//plotarSinal()
-//setInterval(function() {plotarSinal()}, 500);
