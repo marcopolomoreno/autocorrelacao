@@ -41,7 +41,7 @@ var distribuicaoNormal = []
 //Correlação
 var funcaoGaussiana1 = [], funcaoHermiteGauss1 = []
 var funcaoGaussiana2 = [], funcaoHermiteGauss2 = []
-
+var funcaoGaussianaCavada1 = [], funcaoGaussianaCavada2 = []
 
 //Slider
 var sliderVariavel1 = document.getElementById("rangeVariavel1");
@@ -186,6 +186,15 @@ function sinalEntrada(){
 
             funcaoHermiteGauss2[t] = (t - N/2)/(0.02*N) * Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/variavel2a, 2 )) + 
                                     0.02*variavel2b*( Math.random()-0.5 )
+
+            funcaoGaussianaCavada1[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
+            if (t > N/2 + variavel1a - variavel1b && t < N/2 + variavel1a + variavel1b)
+                funcaoGaussianaCavada1[t] = 0
+
+            funcaoGaussianaCavada2[t] = Math.exp(-0.5*Math.pow( (eixoX[t]-N/2)/100, 2 ))
+            if (t > N/2 + variavel2a - variavel2b && t < N/2 + variavel2a + variavel2b)
+                funcaoGaussianaCavada2[t] = 0
+                
         }
 
         if (padrao === false)
@@ -415,6 +424,34 @@ function montarSinal()
                 document.getElementById("rangeVariavel2b").hidden = false
                 document.getElementById("p2b").hidden = false
                 document.getElementById("label2b").innerHTML = "Amplitude do ruído"
+
+                //cont = 0
+            }
+
+            if ( document.getElementById("gaussianaCavada1").checked )
+            {
+                sinal1[k] = funcaoGaussianaCavada1[k]
+                document.getElementById("rangeVariavel1a").hidden = false
+                document.getElementById("p1a").hidden = false
+                document.getElementById("label1a").innerHTML = "Posição do buraco"
+
+                document.getElementById("rangeVariavel1b").hidden = false
+                document.getElementById("p1b").hidden = false
+                document.getElementById("label1b").innerHTML = "Largura do buraco"
+
+                //cont = 0
+            }
+
+            if ( document.getElementById("gaussianaCavada2").checked )
+            {
+                sinal2[k] = funcaoGaussianaCavada2[k]
+                document.getElementById("rangeVariavel2a").hidden = false
+                document.getElementById("p2a").hidden = false
+                document.getElementById("label2a").innerHTML = "Posição do buraco"
+
+                document.getElementById("rangeVariavel2b").hidden = false
+                document.getElementById("p2b").hidden = false
+                document.getElementById("label2b").innerHTML = "Largura do buraco"
 
                 //cont = 0
             }
