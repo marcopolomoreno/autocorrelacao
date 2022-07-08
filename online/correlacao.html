@@ -80,7 +80,7 @@
         <li class="nav-item">
           <a class="nav-link active" id="autocorrelacao-tab" data-toggle="tab" href="#autocorrelacao" role="tab" aria-controls="autocorrelacao" aria-selected="true">Autocorrelação</a>
         </li>
-        <li class="nav-item" onclick="requestAnimationFrame(update);">
+        <li class="nav-item" onclick="clickTabSinais();">
           <a class="nav-link" id="correlacao-tab" data-toggle="tab" href="#correlacao" role="tab" aria-controls="correlacao" aria-selected="false">Correlação</a>
         </li>
     </ul>
@@ -90,13 +90,12 @@
             
             <div class="grid-container" id="botoes">
                 <form class="w3-container w3-card-4">
-                    <h3>Sinais</h3>
 
                     <ul class="nav nav-tabs justify-content-center" id="myTab2" role="tablist">
-                        <li class="nav-item" onclick="requestAnimationFrame(update);">
+                        <li class="nav-item" onclick="clickTabSinais();">
                           <a class="nav-link active" id="tabSinais" data-toggle="tab" href="#sinais" role="tab" aria-controls="Sinais" aria-selected="true">Sinais</a>
                         </li>
-                        <li class="nav-item">
+                        <li class="nav-item" onclick="clickTabUpload()">
                           <a class="nav-link" id="tabUpload" data-toggle="tab" href="#upload" role="tab" aria-controls="Upload" aria-selected="false">Imagem</a>
                         </li>
                     </ul>
@@ -148,6 +147,10 @@
                         </div>
                         
                         <div class="tab-pane fade show" id="upload" role="tabpanel" aria-labelledby="tabUpload">
+                            <div>
+                                <input type="file" id="imageLoader" name="imageLoader"/>
+                            </div>
+
                             <div>
                                 <canvas id="canvas"></canvas>
                             </div>
