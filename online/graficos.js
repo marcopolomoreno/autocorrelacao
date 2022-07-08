@@ -1,4 +1,4 @@
-var arquivo;
+/* var arquivo;
 
 function readTextFile(file)
 {
@@ -17,8 +17,85 @@ function readTextFile(file)
     rawFile.send(null);
 }
 
+readTextFile("correlacao.txt"); */
 
-readTextFile("correlacao.txt");
+
+
+const img = new Image();
+img.crossOrigin = 'anonymous';
+img.src = 'imagem2.jpg';
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+
+var escala = 1  //0.25
+
+var Lx = 1280*escala, Ly = 1024*escala
+
+var rt = document.querySelector(':root')
+rt.style.setProperty('--Lx', Lx + 'px')
+rt.style.setProperty('--Ly', Ly + 'px')
+
+canvas.width = Lx
+canvas.height = Ly
+
+img.onload = function() {
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    img.style.display = 'none';
+};
+
+ctx.scale(1, 1);
+
+var m = 0, n = 0
+
+var posicao = [], sinal = [], delay = [], autocorrelacao = []
+var sinal1 = [], sinal2 = [], correlacao = []
+
+
+//download
+var pontos = 1000
+var matriz = new Array(pontos);
+
+for (var k = 0; k < matriz.length; k++)
+    matriz[k] = new Array(3);
+
+for (var k=0; k<=pontos-1; k++)
+	for (var p=0; p<3; p++)
+        matriz[k][p] = '';
+
+
+var xx, yy = 100
+
+function conversao(event)
+{
+    for (var k=0; k<=pontos-1; k++)
+    {
+        (function (k) {
+            const pixel = ctx.getImageData(k, yy, 1, 1);
+            const data = pixel.data
+            //console.log(data[0])
+            //matriz[k][0] = String(k)
+            matriz[k][1] = String(data[0])
+        })(k);
+    }
+}
+
+conversao()
+
+
+canvas.addEventListener('click', function(event) {
+
+    xx = event.offsetX;
+    yy = event.offsetY;
+
+    console.log(xx + ", " + yy)
+
+    conversao()
+    sinalEntrada()
+    rePlots()
+    update()
+});
+
+
 
 
 var tipoCorrelacao
@@ -207,11 +284,6 @@ function sinalEntrada(){
 
 
 
-
-var m = 0, n = 0
-
-var posicao = [], sinal = [], delay = [], autocorrelacao = []
-var sinal1 = [], sinal2 = [], correlacao = []
 
 for (var k=0; k<=N-1; k++)
 {
@@ -455,6 +527,9 @@ function montarSinal()
 
                 //cont = 0
             }
+
+            if (document.getElementById("tabUpload").ariaSelected === "true")
+                sinal[k] = matriz[k][1]
         }
     }
     else
@@ -609,6 +684,7 @@ function configGraficoAutocorrelacao()
         title: 'pixels',
         titlefont: {size: tamanhoFonte},
         tickfont:  {size: tamanhoFonte},
+        //range: [0, 1000*escala]
     },
     yaxis: {
         title: 'Sinal',
@@ -880,7 +956,9 @@ function update()
         });
     }
 
-    requestAnimationFrame(update);
+    if ( document.getElementById("tabSinais").ariaSelected === "true" || document.getElementById("correlacao-tab").ariaSelected === "true" )
+        requestAnimationFrame(update);
 }
 
-requestAnimationFrame(update);
+if ( document.getElementById("tabSinais").ariaSelected === "true" || document.getElementById("correlacao-tab").ariaSelected === "true" )
+    requestAnimationFrame(update);

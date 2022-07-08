@@ -11,6 +11,7 @@
         "mpmoreno",
         "plotly",
         "Rgsh",
+        "slidecontainer",
         "tickfont"
     ]
 }

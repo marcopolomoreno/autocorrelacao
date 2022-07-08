@@ -9,6 +9,16 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
 
     <style>
+        :root{
+            --Lx: 350px;
+            --Ly: 250px;
+        }
+
+        canvas{
+        		width: var(--Lx);
+        		height: var(--Ly);
+      		}
+
         .grid-container {
           display: grid;
           grid-template-columns: auto auto;
@@ -66,58 +76,85 @@
 </head>
 <body>
 
-    <ul class="nav nav-tabs" id="myTab" role="tablist">
+    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
         <li class="nav-item">
           <a class="nav-link active" id="autocorrelacao-tab" data-toggle="tab" href="#autocorrelacao" role="tab" aria-controls="autocorrelacao" aria-selected="true">Autocorrelação</a>
         </li>
-        <li class="nav-item">
+        <li class="nav-item" onclick="requestAnimationFrame(update);">
           <a class="nav-link" id="correlacao-tab" data-toggle="tab" href="#correlacao" role="tab" aria-controls="correlacao" aria-selected="false">Correlação</a>
         </li>
-      </ul>
+    </ul>
+
       <div class="tab-content" id="myTabContent">
         <div class="tab-pane fade show active" id="autocorrelacao" role="tabpanel" aria-labelledby="autocorrelacao-tab">
             
             <div class="grid-container" id="botoes">
                 <form class="w3-container w3-card-4">
                     <h3>Sinais</h3>
-                    <div class="grid-container">
-                        <p>
-                            <input id="gaussianaRuidoAleatorio" class="w3-radio" type="radio" name="tipoSinal" checked value="gaussianaRuidoAleatorio">
-                            <label>Gaussiana com ruído aleatório</label>
-                        </p>
-                        <p>
-                            <input id="gaussianaRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoSenoidal">
-                            <label>Gaussiana com ruído senoidal</label>
-                        </p>
-                        <p>
-                            <input id="gaussianaRuidoBrowniano" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoBrowniano">
-                            <label>Gaussiana com ruído browniano</label>
-                        </p>
-                        <p>
-                            <input id="gaussianaCavada" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaCavada">
-                            <label>Gaussiana com buraco</label>
-                        </p>
-                        <p>
-                            <input id="hermiteGauss" class="w3-radio" type="radio" name="tipoSinal" value="">
-                            <label>Hermite Gauss</label>
-                        </p>
-                        <p>
-                            <input id="aleatorio" class="w3-radio" type="radio" name="tipoSinal" value="">
-                            <label>Ruído aleatório</label>
-                        </p>
-                        <p>
-                            <input id="distribuicaoNormal" class="w3-radio" type="radio" name="tipoSinal" value="distribuicaoNormal">
-                            <label>Ruído de distribuição normal</label>
-                        </p>
-                        <p>
-                            <input id="aleatorioRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="">
-                            <label>Ruído aleatório com fundo senoidal</label>
-                        </p>
-                        <p>
-                            <input id="ruidoBrowniano" class="w3-radio" type="radio" name="tipoSinal" value="">
-                            <label>Ruído browniano</label>
-                        </p>
+
+                    <ul class="nav nav-tabs justify-content-center" id="myTab2" role="tablist">
+                        <li class="nav-item" onclick="requestAnimationFrame(update);">
+                          <a class="nav-link active" id="tabSinais" data-toggle="tab" href="#sinais" role="tab" aria-controls="Sinais" aria-selected="true">Sinais</a>
+                        </li>
+                        <li class="nav-item">
+                          <a class="nav-link" id="tabUpload" data-toggle="tab" href="#upload" role="tab" aria-controls="Upload" aria-selected="false">Imagem</a>
+                        </li>
+                    </ul>
+
+                    <div class="tab-content" id="myTabContent2">
+
+                        <div class="tab-pane fade show active" id="sinais" role="tabpanel" aria-labelledby="tabSinais">
+                            
+                            <div class="grid-container">
+
+                                <p>
+                                    <input id="gaussianaRuidoAleatorio" class="w3-radio" type="radio" name="tipoSinal" checked value="gaussianaRuidoAleatorio">
+                                    <label>Gaussiana com ruído aleatório</label>
+                                </p>
+                                <p>
+                                    <input id="gaussianaRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoSenoidal">
+                                    <label>Gaussiana com ruído senoidal</label>
+                                </p>
+                                <p>
+                                    <input id="gaussianaRuidoBrowniano" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaRuidoBrowniano">
+                                    <label>Gaussiana com ruído browniano</label>
+                                </p>
+                                <p>
+                                    <input id="gaussianaCavada" class="w3-radio" type="radio" name="tipoSinal" value="gaussianaCavada">
+                                    <label>Gaussiana com buraco</label>
+                                </p>
+                                <p>
+                                    <input id="hermiteGauss" class="w3-radio" type="radio" name="tipoSinal" value="">
+                                    <label>Hermite Gauss</label>
+                                </p>
+                                <p>
+                                    <input id="aleatorio" class="w3-radio" type="radio" name="tipoSinal" value="">
+                                    <label>Ruído aleatório</label>
+                                </p>
+                                <p>
+                                    <input id="distribuicaoNormal" class="w3-radio" type="radio" name="tipoSinal" value="distribuicaoNormal">
+                                    <label>Ruído de distribuição normal</label>
+                                </p>
+                                <p>
+                                    <input id="aleatorioRuidoSenoidal" class="w3-radio" type="radio" name="tipoSinal" value="">
+                                    <label>Ruído aleatório com fundo senoidal</label>
+                                </p>
+                                <p>
+                                    <input id="ruidoBrowniano" class="w3-radio" type="radio" name="tipoSinal" value="">
+                                    <label>Ruído browniano</label>
+                                </p>
+                            </div>
+
+                        </div>
+                        
+                        <div class="tab-pane fade show" id="upload" role="tabpanel" aria-labelledby="tabUpload">
+                            <div>
+                                <canvas id="canvas"></canvas>
+                            </div>
+                        </div>
+
                     </div>
+                    
                 </form>
         
                 <form class="w3-container w3-card-4">
@@ -139,21 +176,26 @@
         
                 <div class="slidecontainer" id="slider2">
                     <input type="range" min="0" max="100" value="20" class="slider" id="rangeVariavel2">
-                    <p id="p2"><span id="label2">amplitude</span> = <span id="variavel2"></span></p>
+                    <p id="p2"><span id="label2">Amplitude</span> = <span id="variavel2"></span></p>
                 </div>
             </div>
         
             
         
-            <div class="grid-container" style="margin-top: -15px">
-                <div id="graficoSinal" style="width: 700px; height:450px;"></div>
-        
-                <div id="graficoAutocorrelacao" style="width: 700px; height:450px;"></div>
+            <div class="w3-row" style="margin-top: -15px;">
+                <form class="w3-container w3-half">
+                    <div id="graficoSinal" ></div>
+                </form>
+                <form class="w3-container w3-half">
+                    <div id="graficoAutocorrelacao" ></div>
+                </form>      
             </div>
 
         </div>
 
         
+        <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
+        <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
         <!-- xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx -->
 
 
