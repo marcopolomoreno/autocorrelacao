@@ -67,8 +67,11 @@
             height: 25px;
             background: #161616;
             cursor: pointer;
-        }
+        }    
     </style>
+
+    <link rel="stylesheet/less" type="text/css" href="styles.less" />
+    <script src="https://cdn.jsdelivr.net/npm/less@4" ></script>
 
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
 
@@ -147,9 +150,19 @@
                         </div>
                         
                         <div class="tab-pane fade show" id="upload" role="tabpanel" aria-labelledby="tabUpload">
-                            <div>
+                           <!--  <div>
                                 <input type="file" id="imageLoader" name="imageLoader"/>
+                            </div> -->
+
+                            <div class="uploadOuter">
+                                <label for="imageLoader" class="btn btn-primary">Upload Imagem</label>
+                                <strong>ou</strong>
+                              <span class="dragBox" >
+                                Arraste para cá
+                              <input type="file" onChange="dragNdrop(event)" ondragover="drag()" ondrop="drop()" id="imageLoader"  />
+                              </span>
                             </div>
+                           <!-- <div id="preview"></div>  -->
 
                             <div>
                                 <canvas id="canvas"></canvas>

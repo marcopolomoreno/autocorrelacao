@@ -28,6 +28,26 @@ const ctx = canvas.getContext('2d');
 
 //Upload de imagem
 
+"use strict";
+function dragNdrop(event) {
+    var fileName = URL.createObjectURL(event.target.files[0]);
+    var preview = document.getElementById("canvas");
+    var previewImg = document.createElement("img");
+    previewImg.setAttribute("src", fileName);
+    preview.innerHTML = "";
+    preview.appendChild(previewImg);
+    imageLoader = document.getElementById('imageLoader');
+    imageLoader.addEventListener('change', handleImage, false);
+}
+
+function drag() {
+    document.getElementById('imageLoader').parentNode.className = 'draging dragBox';
+}
+
+function drop() {
+    document.getElementById('imageLoader').parentNode.className = 'dragBox';
+}
+
 var imageLoader = document.getElementById('imageLoader');
     imageLoader.addEventListener('change', handleImage, false);
 
@@ -38,7 +58,7 @@ function handleImage(e){
         img.onload = function(){
             canvas.width = img.width;
             canvas.height = img.height;
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(img, 0, 0);
         }
         img.src = event.target.result;
     }
@@ -57,12 +77,12 @@ var rt = document.querySelector(':root')
 rt.style.setProperty('--Lx', Lx + 'px')
 rt.style.setProperty('--Ly', Ly + 'px')
 
-canvas.width = Lx
-canvas.height = Ly
+
 
 img.onload = function() {
-    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    img.style.display = 'none';
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0);
 };
 
 ctx.scale(1, 1);
